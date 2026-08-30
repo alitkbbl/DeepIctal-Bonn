@@ -1,12 +1,11 @@
 
-# 🧠 DeepIctal-Bonn
+# DeepIctal-Bonn
 
-**LSTM-based epileptic seizure detection on the Bonn University EEG dataset**
+<p align="center">
+      <img src="figures/banner.png" alt="Project Banner" width="100%">
+</p>
 
-[![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
-[![TensorFlow](https://img.shields.io/badge/TensorFlow-2.21.0-FF6F00?logo=tensorflow&logoColor=white)](https://www.tensorflow.org/)
-[![scikit-learn](https://img.shields.io/badge/scikit--learn-ML-F7931E?logo=scikit-learn&logoColor=white)](https://scikit-learn.org/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+**LSTM-based epileptic seizure detection on the Bonn University EEG dataset.**
 
 
 ---
