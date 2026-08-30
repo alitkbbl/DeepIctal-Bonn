@@ -24,18 +24,6 @@ recall-oriented threshold tuning → evaluation → reporting.
 >
 > 📓 **Interactive walkthrough:** **[Open the Jupyter notebook →](DeepIctal_Bonn.ipynb)**
 
----
-
-## 🧩 Dataset & Class Mapping
-
-| Class | Label | Bonn Set(s) | Description |
-|:-----:|:-----:|:-----------:|:-------------|
-|  Ictal / Seizure | `1` | **S** | Intracranial recordings during active seizure |
-|  Normal / Interictal | `0` | **Z, O, N, F** | Healthy volunteers + seizure-free intracranial recordings |
-
-- **Recordings:** 500 total (100 per set)
-- **Class balance (recording-level):** 400 vs. 100 (≈ 4.0 : 1)
-- **Sampling rate:** 173.61 Hz · **Duration:** ~23.6 s/recording (4097 points)
 
 ---
 
