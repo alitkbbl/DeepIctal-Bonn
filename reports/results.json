@@ -1,0 +1,92 @@
+{
+  "generated_at": "2026-08-30T16:45:13",
+  "seed": 21,
+  "python_version": "3.12.3",
+  "tensorflow_version": "2.21.0",
+  "dataset": {
+    "n_recordings": 500,
+    "n_windowed_samples": 2000,
+    "tensor_shape": [
+      2000,
+      23,
+      178
+    ],
+    "class_0_sets": [
+      "Z",
+      "O",
+      "N",
+      "F"
+    ],
+    "class_1_sets": [
+      "S"
+    ],
+    "class_0_count_recordings": 400,
+    "class_1_count_recordings": 100,
+    "imbalance_ratio": 4.0,
+    "n_train": 1400,
+    "n_val": 300,
+    "n_test": 300
+  },
+  "windowing": {
+    "signal_len": 4097,
+    "n_windows": 23,
+    "window_len": 178,
+    "crop_len": 4094,
+    "n_offsets": 4,
+    "sampling_rate_hz": 173.61
+  },
+  "class_weights": {
+    "0": 0.6272401433691757,
+    "1": 2.464788732394366
+  },
+  "training": {
+    "epochs_run": 27,
+    "final_train_loss": 0.03138544410467148,
+    "final_val_loss": 0.06611567735671997,
+    "final_train_accuracy": 1.0,
+    "final_val_accuracy": 0.9833333492279053,
+    "best_val_loss": 0.05562107264995575
+  },
+  "roc_auc": 0.9976851851851852,
+  "threshold_tuning": {
+    "target_recall": 0.9,
+    "tuned_threshold": 0.9126864671707153
+  },
+  "test_metrics_default": {
+    "threshold": 0.5,
+    "accuracy": 0.97,
+    "precision": 0.8823529411764706,
+    "recall": 0.9375,
+    "f1_score": 0.9090909090909091,
+    "confusion_matrix": [
+      [
+        246,
+        6
+      ],
+      [
+        3,
+        45
+      ]
+    ]
+  },
+  "test_metrics_tuned": {
+    "threshold": 0.9126864671707153,
+    "accuracy": 0.97,
+    "precision": 0.8979591836734694,
+    "recall": 0.9166666666666666,
+    "f1_score": 0.9072164948453608,
+    "confusion_matrix": [
+      [
+        247,
+        5
+      ],
+      [
+        4,
+        44
+      ]
+    ]
+  },
+  "model": {
+    "total_params": 75553
+  }
+}
