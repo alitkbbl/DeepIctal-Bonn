@@ -6,4 +6,3 @@ scipy
 scikit-learn
 tensorflow-cpu
 jupyter
-
