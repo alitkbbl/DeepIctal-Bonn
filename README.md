@@ -1,4 +1,3 @@
-<div align="center">
 
 # 🧠 DeepIctal-Bonn
 
@@ -9,11 +8,10 @@
 [![scikit-learn](https://img.shields.io/badge/scikit--learn-ML-F7931E?logo=scikit-learn&logoColor=white)](https://scikit-learn.org/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-</div>
 
 ---
 
-## Overview
+## 📖 Overview
 
 DeepIctal-Bonn is a reproducible deep learning pipeline that classifies single-channel EEG
 recordings from the **Bonn University EEG dataset** into **Normal/Interictal** and
@@ -23,53 +21,98 @@ The pipeline covers the full lifecycle: signal ingestion → windowed tensor con
 leakage-safe grouped splitting → LSTM training with class-imbalance handling →
 recall-oriented threshold tuning → evaluation → reporting.
 
-📄 **For full methodology, derivations, and discussion, see the [complete report](reports/report.pdf).**
+> 📄 **Full methodology, derivations, and discussion:** **[Read the complete report →](reports/report.pdf)**
+>
+> 📓 **Interactive walkthrough:** **[Open the Jupyter notebook →](DeepIctal_Bonn.ipynb)**
 
-## Dataset & Class Mapping
+---
+
+## 🧩 Dataset & Class Mapping
 
 | Class | Label | Bonn Set(s) | Description |
 |:-----:|:-----:|:-----------:|:-------------|
-| 🔴 Ictal / Seizure | `1` | **S** | Intracranial recordings during active seizure |
-| 🟢 Normal / Interictal | `0` | **Z, O, N, F** | Healthy volunteers + seizure-free intracranial recordings |
+|  Ictal / Seizure | `1` | **S** | Intracranial recordings during active seizure |
+|  Normal / Interictal | `0` | **Z, O, N, F** | Healthy volunteers + seizure-free intracranial recordings |
 
 - **Recordings:** 500 total (100 per set)
 - **Class balance (recording-level):** 400 vs. 100 (≈ 4.0 : 1)
 - **Sampling rate:** 173.61 Hz · **Duration:** ~23.6 s/recording (4097 points)
 
-## Methodology (Summary)
+---
 
-1. **Windowing** — each recording is reshaped to `(23, 178)`, so the LSTM
-   unrolls 23 steps instead of 4097, avoiding vanishing gradients.
-2. **Micro-shift augmentation** — 4 crop offsets per recording, quadrupling the
-   dataset to 2000 samples at a fixed class ratio.
-3. **Grouped splitting** — `GroupShuffleSplit` keyed on recording ID keeps all crops of a
-   recording in the same split, preventing leakage.
-4. **Scaling** — `StandardScaler` fit on the training split only, applied to all splits.
-5. **Class weighting** — computed `class_weight` passed to training to offset the imbalance.
-6. **Threshold tuning** — the decision threshold is chosen on the validation set to reach a
-   minimum recall of 0.9, since missed seizures carry a higher clinical cost
-   than false alarms.
+## ⚙️ Methodology
 
-*(Full mathematical treatment and rationale in the [report](reports/report.pdf).)*
+<table>
+<thead>
+<tr><th align="center">#</th><th align="left">Stage</th><th align="left">What happens</th><th align="left">Why</th></tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">1️⃣</td>
+<td><b>Windowing</b></td>
+<td>Reshape each recording to <code>(23, 178)</code></td>
+<td>LSTM unrolls 23 steps instead of 4097, avoiding vanishing gradients</td>
+</tr>
+<tr>
+<td align="center">2️⃣</td>
+<td><b>Micro-shift augmentation</b></td>
+<td>4 crop offsets per recording</td>
+<td>Quadruples the dataset to 2000 samples at a fixed class ratio</td>
+</tr>
+<tr>
+<td align="center">3️⃣</td>
+<td><b>Grouped splitting</b></td>
+<td><code>GroupShuffleSplit</code> keyed on recording ID</td>
+<td>Keeps all crops of a recording in the same split — prevents leakage</td>
+</tr>
+<tr>
+<td align="center">4️⃣</td>
+<td><b>Scaling</b></td>
+<td><code>StandardScaler</code> fit on the training split only</td>
+<td>Applied to all splits without leaking test/val statistics</td>
+</tr>
+<tr>
+<td align="center">5️⃣</td>
+<td><b>Class weighting</b></td>
+<td>Computed <code>class_weight</code> passed to training</td>
+<td>Offsets the 4:1 class imbalance</td>
+</tr>
+<tr>
+<td align="center">6️⃣</td>
+<td><b>Threshold tuning</b></td>
+<td>Decision threshold chosen on the validation set</td>
+<td>Targets recall ≥ 0.9 — missed seizures cost more than false alarms</td>
+</tr>
+</tbody>
+</table>
 
-## Model Architecture
+> *(Full mathematical treatment and rationale in the [report](reports/report.pdf).)*
 
+---
+
+## 🏗️ Model Architecture
+
+```mermaid
+flowchart TD
+    A["Input<br/>(23, 178)"] --> B["LSTM(64, return_sequences=True)<br/>+ L2"]
+    B --> C["BatchNormalization<br/>+ Dropout(0.35)"]
+    C --> D["LSTM(32)<br/>+ L2"]
+    D --> E["BatchNormalization<br/>+ Dropout(0.35)"]
+    E --> F["Dense(16, relu)<br/>+ Dropout(0.2)"]
+    F --> G["Dense(1, sigmoid)<br/>P(Seizure)"]
+
+    style A fill:#2b2b2b,stroke:#888,color:#fff
+    style B fill:#1f4e79,stroke:#4a90d9,color:#fff
+    style C fill:#3a3a3a,stroke:#888,color:#fff
+    style D fill:#1f4e79,stroke:#4a90d9,color:#fff
+    style E fill:#3a3a3a,stroke:#888,color:#fff
+    style F fill:#2e5c3e,stroke:#5cb87a,color:#fff
+    style G fill:#7a2e2e,stroke:#d96a6a,color:#fff
 ```
-Input (23, 178)
-   ├─ LSTM(64, return_sequences=True) + L2
-   ├─ BatchNormalization + Dropout(0.35)
-   ├─ LSTM(32) + L2
-   ├─ BatchNormalization + Dropout(0.35)
-   ├─ Dense(16, relu) + Dropout(0.2)
-   └─ Dense(1, sigmoid) → P(Seizure)
-```
 
-- **Trainable parameters:** 75,553
-- **Optimizer:** Adam (lr = 1e-3, `ReduceLROnPlateau`)
-- **Loss:** Binary Cross-Entropy, class-weighted (`{"0": 0.627, "1": 2.465}`)
-- **Regularization:** `EarlyStopping` (patience=15) + Dropout + L2
+---
 
-## Exploratory Data Analysis
+## 🔍 Exploratory Data Analysis
 
 | Class Distribution | Time-Domain Comparison |
 |:---:|:---:|
@@ -79,7 +122,9 @@ Input (23, 178)
 |:---:|
 | ![PSD](figures/psd_comparison.png) |
 
-## Training & Evaluation
+---
+
+## 📈 Training & Evaluation
 
 | Training Curves | Precision–Recall Trade-off |
 |:---:|:---:|
@@ -89,7 +134,7 @@ Input (23, 178)
 |:---:|:---:|
 | ![Confusion Matrix](figures/confusion_matrix.png) | ![ROC Curve](figures/roc_curve.png) |
 
-### Test-Set Performance
+### 🎯 Test-Set Performance
 
 Operating point tuned on the validation set for recall ≥ 0.9 (threshold = 0.913):
 
@@ -103,29 +148,11 @@ Operating point tuned on the validation set for recall ≥ 0.9 (threshold = 0.91
 
 Trained for 27 epochs (early-stopped); best validation loss 0.0556.
 
-## Getting Started
+---
 
-```bash
-# 1. Unzip the project and move into it
-cd DeepIctal-Bonn
-
-# 2. Install dependencies
-pip install -r requirements.txt
-
-# 3. Run the pipeline (data → training → evaluation)
-python deepictal_bonn_pipeline.py
-# ...or open the notebook:
-jupyter notebook DeepIctal_Bonn.ipynb
-
-# 4. Generate the README / LaTeX report / PDF from the results
-python generate_docs.py
-```
-
-
-## Citation
+## 📚 Citation
 
 > Andrzejak, R. G., Lehnertz, K., Mormann, F., Rieke, C., David, P., & Elger, C. E. (2001).
 > Indications of nonlinear deterministic and finite-dimensional structures in time series
 > of brain electrical activity: Dependence on recording region and brain state.
 > *Physical Review E*, 64(6), 061907.
-
